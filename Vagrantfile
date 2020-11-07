@@ -2,6 +2,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# enable overrides with env vars
+private_ip = ENV['GEMP_PRIVATE_IP'] || "192.168.50.94"
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -16,7 +19,17 @@ Vagrant.configure(2) do |config|
 
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    gemp.vm.network "private_network", ip: "192.168.50.94"
+    gemp.vm.network "private_network", ip: private_ip
+    # gemp.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
+
+    gemp.vm.post_up_message = <<-HEREDOC
+    Startup:
+        vagrant ssh
+        mvn clean install
+        ./run-gemp.sh
+    Web Address:
+        http://#{private_ip}:8080/gemp-swccg
+    HEREDOC
 
     # Provider-specific configuration so you can fine-tune various
     # backing providers for Vagrant. These expose provider-specific options.
