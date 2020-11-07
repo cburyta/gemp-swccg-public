@@ -22,6 +22,15 @@ Vagrant.configure(2) do |config|
     gemp.vm.network "private_network", ip: private_ip
     # gemp.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
 
+    gemp.vm.post_up_message = <<-HEREDOC
+    Startup:
+        vagrant ssh
+        mvn clean install
+        ./run-gemp.sh
+    Web Address:
+        http://#{private_ip}:8080/gemp-swccg
+    HEREDOC
+
     # Provider-specific configuration so you can fine-tune various
     # backing providers for Vagrant. These expose provider-specific options.
     # Example for VirtualBox:
